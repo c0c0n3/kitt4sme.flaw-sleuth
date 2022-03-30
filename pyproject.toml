@@ -9,6 +9,7 @@ python = "^3.8"
 fipy = {git = "https://github.com/c0c0n3/kitt4sme.fipy.git", tag = "0.2.1"}
 pandas = "^1.4.1"
 pydantic = "^1.9.0"
+streamlit = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.3"
