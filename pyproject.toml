@@ -5,11 +5,18 @@ description = "Leaves no stone unturned to find welding flaws!"
 authors = ["souayb", "simhavas-uday", "c0c0n3"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 fipy = {git = "https://github.com/c0c0n3/kitt4sme.fipy.git", tag = "0.2.1"}
 pandas = "^1.4.1"
 pydantic = "^1.9.0"
 streamlit = "^1.8.1"
+numpy = "^1.22.3"
+pyod = "^0.9.8"
+llvmlite = "^0.38.0"
+# ^ NOTE pyod depends on llvmlite "^0.38.0" which requires python ">=3.8,<3.11".
+# That's why we have that since e.g. w/ python = "^3.8", llvmlite won't install.
+# But the funny thing is that if we don't specify the llvmlite dep explicitly,
+# poetry install will still fail.
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.3"
