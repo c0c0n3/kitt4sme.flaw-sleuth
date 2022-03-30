@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "flawsleuth"
+version = "0.1.0"
+description = "Leaves no stone unturned to find welding flaws!"
+authors = ["souayb", "simhavas-uday", "c0c0n3"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fipy = {git = "https://github.com/c0c0n3/kitt4sme.fipy.git", tag = "0.2.1"}
+pandas = "^1.4.1"
+pydantic = "^1.9.0"
+
+[tool.poetry.dev-dependencies]
+coverage = "^6.3"
+pytest = "^6.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
