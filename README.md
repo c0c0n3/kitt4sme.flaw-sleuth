@@ -49,3 +49,17 @@ Measure global test coverage and generate an HTML report
 $ coverage run -m pytest -v tests
 $ coverage html
 ```
+
+Run the Streamlit app locally on port 8080 and without making it start
+a browser
+
+```console
+$ streamlit run --server.headless true --server.port 8080 streamlit-app.py
+```
+
+Build and run the Docker image
+
+```console
+$ docker build -t kitt4sme/flaw-sleuth .
+$ docker run -p 8501:8501 kitt4sme/flaw-sleuth
+```
