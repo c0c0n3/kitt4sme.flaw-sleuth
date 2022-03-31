@@ -1,7 +1,6 @@
-import streamlit as st
-
 from flawsleuth.ai import predict
 from flawsleuth.timeseries import fetch_data_frame
+import streamlit as st
 
 
 def run():

@@ -63,3 +63,31 @@ Build and run the Docker image
 $ docker build -t kitt4sme/flaw-sleuth .
 $ docker run -p 8501:8501 kitt4sme/flaw-sleuth
 ```
+
+
+### Live simulator
+
+We've whipped together a test bed to simulate a live environment similar
+to that of the KITT4SME cluster. In the `tests/sim` directory, you'll find
+a Docker compose file with
+
+* Orion LD connected to MongoDB
+* Quantum Leap with a CrateDB backend
+* Our Flaw Sleuth service
+
+To start the show, run (Ctrl+C to stop)
+
+```console
+$ poetry shell
+$ python tests/sim
+```
+
+This will bring up the Docker compose environment (assuming you've got a
+Docker engine running already), subscribe Quantum Leap to Orion and then
+will start sending welding machine entities to Orion. To see what's going
+on, browse to the CrateDB Web UI at: http://localhost:4200.
+
+Now browse to our Flaw Sleuth service page at: http://localhost:8501.
+You should see a table containing the latest 10 entries in the welding
+machine series Quantum Leap is busy collecting. Refresh the page to see
+Flaw Sleuth refresh the table as Quantum Leap gets more data from Orion.
