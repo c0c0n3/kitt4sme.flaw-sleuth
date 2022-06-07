@@ -1,8 +1,10 @@
 from datetime import datetime
 import json
 import random
+import pandas as pd
 from typing import List, Optional
 from uri import URI
+from itertools import count
 
 from fipy.ngsi.entity import FloatAttr, TextAttr
 from fipy.ngsi.headers import FiwareContext
@@ -12,7 +14,8 @@ from fipy.sim.sampler import DevicePoolSampler
 from fipy.wait import wait_for_orion, wait_for_quantumleap
 
 from flawsleuth.ngsy import WeldingMachineEntity
-
+from tests.util.data_process import Preprocessing
+FILEPATH = 'tests/util/Welding_data_new.csv'
 
 TENANT = 'wamtechnik'
 ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'
@@ -34,7 +37,7 @@ QUANTUMLEAP_SUB = {
         }
     }
 }
-
+COUNTER = count(0)
 
 def orion_client(service_path: Optional[str] = None,
                  correlator: Optional[str] = None) -> OrionClient:
@@ -110,12 +113,19 @@ class WeldingMachineSampler(DevicePoolSampler):
 
     def __init__(self, pool_size: int, orion: Optional[OrionClient] = None):
         super().__init__(pool_size, orion if orion else orion_client())
+        self.data = pd.read_csv(FILEPATH, decimal=',')
 
-    def new_device_entity(self) -> WeldingMachineEntity:
+        self.counter = 0
+
+
+    def new_device_entity_scv(self) -> WeldingMachineEntity:
         seed = random.uniform(0, 1)
+        time_count = next(self.counter)
+        to_predict = self.data[time_count:time_count + 1]
+
 
         return WeldingMachineEntity(
-            id='',
+            id='34',
 
             barcode=TextAttr.new('bc-xyz'),
             face=TextAttr.new(random.choice(['f1', 'f2'])),
@@ -131,3 +141,61 @@ class WeldingMachineSampler(DevicePoolSampler):
 
             datetime=TextAttr.new(f"{datetime.now().isoformat()}")
         )
+
+    def new_device_entity(self) -> WeldingMachineEntity:
+        seed = random.uniform(0, 1)
+        self.counter = next(COUNTER)
+        to_predict = self.data[self.counter:self.counter+1]
+        to_predict = to_predict.to_dict()
+        to_print = WeldingMachineEntity(
+            id='34',
+
+            barcode=TextAttr.new(to_predict['BarCode'][self.counter]),
+            face=TextAttr.new(to_predict['Face'][self.counter]),
+            cell=TextAttr.new(to_predict['Cell'][self.counter]),
+            point=TextAttr.new(to_predict['Point'][self.counter]),
+            group=TextAttr.new(to_predict['Group'][self.counter]),
+            joules=FloatAttr.new(to_predict['Output Joules'][self.counter]),
+            charge=FloatAttr.new(to_predict[ 'Charge (v)'][self.counter]),
+            residue=FloatAttr.new(to_predict[ 'Residue (v)'][self.counter]),
+            force_n=FloatAttr.new(to_predict[ 'Force L N'][self.counter]),
+            force_n_1=FloatAttr.new(to_predict['Force L N_1'][self.counter]),
+            datetime=TextAttr.new(f"{datetime.now().isoformat()}")
+        )
+        # print(to_print)
+        # for key, val in to_predict.items():
+        #     if key == 'Output Joules':
+        #         print(f'key {key}--values type {FloatAttr.new(val[self.counter])} counter { self.counter}')
+        #     else :
+        #         print ( f'key {key}--values type {  val[self.counter] } counter {self.counter}' )
+
+        return WeldingMachineEntity(
+            id='',
+
+            barcode=TextAttr.new(to_predict['BarCode'][self.counter]),
+            face=TextAttr.new(to_predict['Face'][self.counter]),
+            cell=TextAttr.new(to_predict['Cell'][self.counter]),
+            point=TextAttr.new(to_predict['Point'][self.counter]),
+            group=TextAttr.new(to_predict['Group'][self.counter]),
+            joules=FloatAttr.new(to_predict['Output Joules'][self.counter]),
+            charge=FloatAttr.new(to_predict[ 'Charge (v)'][self.counter]),
+            residue=FloatAttr.new(to_predict[ 'Residue (v)'][self.counter]),
+            force_n=FloatAttr.new(to_predict[ 'Force L N'][self.counter]),
+            force_n_1=FloatAttr.new(to_predict['Force L N_1'][self.counter]),
+            datetime=TextAttr.new(f"{datetime.now().isoformat()}")
+        )
+        # return WeldingMachineEntity(
+        #     id='34',
+        #
+        #     barcode=TextAttr.new('bc-xyz'),
+        #     face=TextAttr.new(random.choice(['f1', 'f2'])),
+        #     cell=TextAttr.new(random.choice(['c1', 'c2'])),
+        #     point=TextAttr.new(random.choice(['p1', 'p2'])),
+        #     group=TextAttr.new(random.choice(['g1', 'g2'])),
+        #     joules=FloatAttr.new(1.0335 + seed),
+        #     charge=FloatAttr.new(2.0335 + seed),
+        #     residue=FloatAttr.new(0.0335 + seed),
+        #     force_n=FloatAttr.new(3.09 + seed),
+        #     force_n_1=FloatAttr.new(4.0335 + seed),
+        #     datetime=TextAttr.new(f"{datetime.now().isoformat()}")
+        # )

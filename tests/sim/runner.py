@@ -20,7 +20,7 @@ def bootstrap():
 def send_welding_machine_entities():
     sampler = WeldingMachineSampler(pool_size=1)
     try:
-        sampler.sample(samples_n=1000, sampling_rate=2.5)
+        sampler.sample(samples_n=10, sampling_rate=2.5)
     except Exception as e:
         print(e)
 
