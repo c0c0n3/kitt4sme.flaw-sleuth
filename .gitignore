@@ -26,7 +26,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+flawsleuth/file/Welding_data_new.csv
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -131,3 +131,6 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+
+#Files
+kitt4sme.flaw-sleuth/tests/util/Welding_data_new.csv
