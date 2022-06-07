@@ -133,4 +133,5 @@ dmypy.json
 .vscode/
 
 #Files
-kitt4sme.flaw-sleuth/tests/util/Welding_data_new.csv
+tests/util/Welding_data_new.csv
+data/cls_new.joblib
