@@ -4,7 +4,7 @@ from fipy.ngsi.quantumleap import QuantumLeapClient
 import pandas as pd
 from uri import URI
 
-from flawsleuth.ngsy import WeldingMachineEntity
+from flawsleuth.ngsy import WeldingMachineEntity, RawReading
 
 
 # TODO these values should come from config and HTTP headers!
@@ -26,11 +26,15 @@ def fetch_entity_series() -> EntitySeries:
     quantumleap = quantumleap_client()
     return quantumleap.entity_series(
         entity_id=ENTITY_ID, entity_type=entity_type,
-        entries_from_latest=10
+        entries_from_latest=1
     )
 
-
-def fetch_data_frame() -> pd.DataFrame:
+def fetch_data_frame() -> EntitySeries:
     r = fetch_entity_series()
-    time_indexed_df = pd.DataFrame(r.dict()).set_index('index')
-    return time_indexed_df
+    machine1 = WeldingMachineEntity ( id='' ).set_id_with_type_prefix ( '1' )
+    # rr = RawReading ( r  )
+    # x = rr.to_machine_entity ( entity_id=machine1.id )
+    #
+    # print("RRRRRRRRRR", x)
+    # time_indexed_df = pd.DataFrame(r.dict()).set_index('index')
+    return r
