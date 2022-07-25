@@ -48,7 +48,7 @@ def orion_client(service_path: Optional[str] = None,
 
 
 def wait_on_orion():
-    wait_for_orion(orion_client())
+    wait_for_orion(orion_client(), max_wait=20)
 
 
 class SubMan:
@@ -106,7 +106,7 @@ def quantumleap_client() -> QuantumLeapClient:
 
 
 def wait_on_quantumleap():
-    wait_for_quantumleap(quantumleap_client())
+    wait_for_quantumleap(quantumleap_client(), max_wait=20)
 
 
 class WeldingMachineSampler(DevicePoolSampler):
