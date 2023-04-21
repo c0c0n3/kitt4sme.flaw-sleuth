@@ -18,7 +18,8 @@ from tests.util.data_process import Preprocessing
 FILEPATH = 'tests/util/Welding_data_new.csv'
 
 TENANT = 'wamtechnik'
-ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'
+# ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'
+ORION_EXTERNAL_BASE_URL = 'http://kitt4sme.collab-cloud.eu/orion'
 QUANTUMLEAP_INTERNAL_BASE_URL = 'http://quantumleap:8668'
 QUANTUMLEAP_EXTERNAL_BASE_URL = 'http://localhost:8668'
 
