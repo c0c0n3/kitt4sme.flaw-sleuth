@@ -507,7 +507,6 @@ def run():
                 if old_bar != bar:
                     pack_info.empty()
                     pack_info.markdown (f'<center> <h2> <p style="font-family:fantasy; font-size: 14px;"> Current pack: {bar} </p> </h2></center>', unsafe_allow_html=True )
-
                     record_new = True
                     old_bar = bar
                 if not record_new:
@@ -642,13 +641,13 @@ def run():
                 l1, l2 = (cell//col)%row, cell%col
                 if location_info[0][0] == 1:  # face1
                     if location_info[0][-1] == 1: # point1
-                        face_1[l1 +plot_count_1, l2] = location_info[0][1]
-                        face_1_maske[l1 +plot_count_1,l2] = False
+                        face_1[l1*2, l2] = location_info[0][1]
+                        face_1_maske[l1*2,l2] = False
                         time_plot_1_1 += 1
                     else: # point2
                         info_train.write(F"CURRENT:POINT 2 plot_count_1: {plot_count_1 + 1 },  time_plot_1_1 {time_plot_1_2}")
-                        face_1[l1 +plot_count_1 + 1, l2] = location_info[0][1]
-                        face_1_maske[l1 +plot_count_1 + 1, l2] = False
+                        face_1[l1*2 + 1, l2] = location_info[0][1]
+                        face_1_maske[l1*2 + 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
@@ -659,12 +658,12 @@ def run():
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
 
-                        face_2[l1 + plot_count_2 , l2] = location_info[0][1]
-                        face_2_maske[l1 + plot_count_2 ,l2] = False
+                        face_2[l1*2 , l2] = location_info[0][1]
+                        face_2_maske[l1*2 ,l2] = False
                         time_plot_2_1 += 1
                     else: # point2
-                        face_2[l1 + plot_count_2+ 1, l2] = location_info[0][1]
-                        face_2_maske[l1 + plot_count_2+ 1, l2] = False
+                        face_2[l1*2+ 1, l2] = location_info[0][1]
+                        face_2_maske[l1*2+ 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
                             plot_count_2 += 1
@@ -679,13 +678,13 @@ def run():
                 l1, l2 = (cell//col)%row, cell%col
                 if location_info[0][0] == 1:  # face1
                     if location_info[0][-1] == 1: # point1
-                        face_1[l1 +plot_count_1, l2] = location_info[0][1]
-                        face_1_maske[l1 +plot_count_1,l2] = False
+                        face_1[l1*2, l2] = location_info[0][1]
+                        face_1_maske[l1*2,l2] = False
                         time_plot_1_1 += 1
                     else: # point2
                         info_train.write(F"CURRENT:POINT 2 plot_count_1: {plot_count_1 + 1 },  time_plot_1_1 {time_plot_1_2}")
-                        face_1[l1 +plot_count_1 + 1, l2] = location_info[0][1]
-                        face_1_maske[l1 +plot_count_1 + 1, l2] = False
+                        face_1[l1*2 + 1, l2] = location_info[0][1]
+                        face_1_maske[l1*2 + 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
                             plot_count_1 += 1
@@ -695,12 +694,12 @@ def run():
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
 
-                        face_2[l1 + plot_count_2 , l2] = location_info[0][1]
-                        face_2_maske[l1 + plot_count_2 ,l2] = False
+                        face_2[l1*2 , l2] = location_info[0][1]
+                        face_2_maske[l1*2 ,l2] = False
                         time_plot_2_1 += 1
                     else: # point2
-                        face_2[l1 + plot_count_2+ 1, l2] = location_info[0][1]
-                        face_2_maske[l1 + plot_count_2+ 1, l2] = False
+                        face_2[l1*2+ 1, l2] = location_info[0][1]
+                        face_2_maske[l1*2+ 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
                             plot_count_2 += 1
