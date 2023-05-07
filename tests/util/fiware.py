@@ -15,7 +15,9 @@ from fipy.wait import wait_for_orion, wait_for_quantumleap
 
 from flawsleuth.ngsy import WeldingMachineEntity
 from tests.util.data_process import Preprocessing
-FILEPATH = 'tests/util/Welding_data_new.csv'
+# FILEPATH = 'tests/util/Welding_data_new.csv'
+# FILEPATH = 'tests/util/final.csv'
+FILEPATH = 'data/final.csv'
 
 TENANT = 'wamtechnik'
 ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'
@@ -120,8 +122,8 @@ class WeldingMachineSampler(DevicePoolSampler):
 
     def new_device_entity_scv(self) -> WeldingMachineEntity:
         seed = random.uniform(0, 1)
-        time_count = next(self.counter)
-        to_predict = self.data[time_count:time_count + 1]
+        # time_count = next(self.counter)
+        # to_predict = self.data[time_count:time_count + 1]
 
 
         return WeldingMachineEntity(
