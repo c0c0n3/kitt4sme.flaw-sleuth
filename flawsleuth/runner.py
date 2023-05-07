@@ -222,7 +222,7 @@
 
 
 from flawsleuth.ai import predict, kalman_forecast
-from flawsleuth.timeseries import fetch_data_frame, fetch_entity_series
+from flawsleuth.timeseries import fetch_entity_series
 from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
@@ -245,6 +245,7 @@ import matplotlib.pyplot as plt
 from flawsleuth.utils.kalman import DiscreteKalmanFilter
 from collections import defaultdict, deque
 from flawsleuth import utils
+# from tests.util.fiware import wait_for_orion
 
 
 st.set_page_config ( layout="wide" )
@@ -390,16 +391,23 @@ def run():
             with st.expander('See instructions'):
                 st.subheader("Plot setting")
                 st.markdown ( """
-                - Forecasting steps: Maximum length of the plot
-                - Stop: Stop the simulation
-                -
-                - Choose the model :
-                    - ***Repeat***: Model based on the repeated labeling method
-                        - Labeling strategy provided by the WAM technik
-                    - ***Iforest***: Model base on Isolation forest labeling method
-                        - Unsupervised labeling mechanisme for anomalies. A clustering based method
+                - Feature to be display: The feature to be display in the scatter plot and the pack
+                - Max length for scatter plot: Maximum length of the plot in the scatter plot
+                    - Per  112 points is one cycle of the battery pack (448 points is 4 cycles corresponding to one battery pack)
+                """ )
+                st.subheader("Model control")
+                st.markdown ( """
+                - Choose the model: The model to be used for the anomaly detection
+                    - ***Isolation Forest***: Unsupervised labeling mechanisme for anomalies. A clustering based method
+                    - ***Random Forest***: Supervised labeling mechanisme for anomalies. A classification based method
+                    - ***Thresholding***: Labeling mechanisme based on a thresholding method
+                - Choose the Data shift detector: The model to be used for the drift detection
+                    - ***Wasserschein distance***: A distance based method for drift detection
+                    - ***Petite***: A distance based method for drift detection
+                    - ***Mean averaging***: A distance based method for drift detection
+                - Forecasting steps: The number of steps to be forecasted
+                """ )
 
-                        """ )
 
     ######################### SETING UP THE TABS ########################################
 
@@ -442,28 +450,11 @@ def run():
 
 
     if SADS_submit:
-        face_1 =  np.ones(shape=(14,16))*0.
-        face_2 =  np.ones(shape=(14,16))*0.
-
-        face_1_maske = np.ones ( shape=(14,16) )
-        face_2_maske = np.ones ( shape=(14,16) )
-
-        face_1_repeat = np.zeros(shape=(14,16))
-        face_2_repeat = np.zeros(shape=(14,16))
-
-        face_1_repeat_mask =  np.ones(shape=(14,16))
-        face_2_repeat_mask = np.ones(shape = (14,16))
-
-
-        time_plot_1_1 = 0
-        time_plot_1_2 = 0
-        time_plot_2_1 = 0
-        time_plot_2_2 = 0
-        plot_count_1 = 0
-        plot_count_2 = 0
-        plot_count_repeat_1 = 0
-        plot_count_repeat_2 = 0
-
+        shape = (14, 16)
+        face_1, face_2 = np.zeros(shape), np.zeros(shape)
+        face_1_maske, face_2_maske = np.ones(shape), np.ones(shape)
+        face_1_repeat, face_2_repeat = np.zeros(shape), np.zeros(shape)
+        face_1_repeat_mask, face_2_repeat_mask = np.ones(shape), np.ones(shape)
 
         model = cls_loader(clsPath)
 
@@ -473,12 +464,14 @@ def run():
         result_new = deque(maxlen=WINDOW_SIZE)
         result_new_bar = deque(maxlen=WINDOW_SIZE)
         TRAIN_MODEL = False
+
+        
         # while True:  # stop_forecast == 'continue':
         while fetch_entity_series ()   and not stop_submit:
             fig = make_subplots ( rows=4, cols=1 )
             time_count = next ( counter )
 
-            rr = fetch_entity_series ()
+            rr = fetch_entity_series (frame=pack_test)
             to_predict = pd.DataFrame ( rr.dict() )
             # st.write(to_predict)
             to_predict[['face', 'cell', 'point']] = to_predict[['face', 'cell', 'point']].apply(lambda x: x.str.extract('(\d+)', expand=False).astype(int)) # extract the number from the string
@@ -506,7 +499,9 @@ def run():
 
                 if old_bar != bar:
                     pack_info.empty()
-                    pack_info.markdown (f'<center> <h2> <p style="font-family:fantasy; font-size: 14px;"> Current pack: {bar} </p> </h2></center>', unsafe_allow_html=True )
+                    pack_info.markdown (f"""
+                    <center> <h2> <p style="font-family:fantasy; font-size: 14px;"> Previous pack:
+                    {old_bar}--> Current pack: {bar} </p> </h2></center>', unsafe_allow_html=True """)
                     record_new = True
                     old_bar = bar
                 if not record_new:
@@ -645,13 +640,9 @@ def run():
                     if location_info[0][-1] == 1: # point1
                         face_1[l1*2, l2] = location_info[0][1]
                         face_1_maske[l1*2,l2] = False
-                        time_plot_1_1 += 1
                     else: # point2
-                        info_train.write(F"CURRENT:POINT 2 plot_count_1: {plot_count_1 + 1 },  time_plot_1_1 {time_plot_1_2}")
                         face_1[l1*2 + 1, l2] = location_info[0][1]
                         face_1_maske[l1*2 + 1, l2] = False
-                        if cell%(col)  == 15:
-                            pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
@@ -661,10 +652,8 @@ def run():
                     else: # point2
                         face_2[l1*2+ 1, l2] = location_info[0][1]
                         face_2_maske[l1*2+ 1, l2] = False
-                        if cell%(col)  == 15:
-                            pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
-            elif (old_location != location_info[0]).any() and time_count > 0:
+            elif (old_location != location_info).any() and time_count > 0:
 
                 old_location = location_info
 
@@ -673,11 +662,8 @@ def run():
                         face_1[l1*2, l2] = location_info[0][1]
                         face_1_maske[l1*2,l2] = False
                     else: # point2
-                        info_train.write(F"CURRENT:POINT 2 plot_count_1: {plot_count_1 + 1 },  time_plot_1_1 {time_plot_1_2}")
                         face_1[l1*2 + 1, l2] = location_info[0][1]
                         face_1_maske[l1*2 + 1, l2] = False
-                        if cell%(col)  == 15:
-                            pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
@@ -687,8 +673,6 @@ def run():
                     else: # point2
                         face_2[l1*2+ 1, l2] = location_info[0][1]
                         face_2_maske[l1*2+ 1, l2] = False
-                        if cell%(col)  == 15:
-                            pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
             else:
 
@@ -700,10 +684,8 @@ def run():
                         face_1_repeat_mask[l1*2, l2] = False
                     else: # point2
 
-                        face_1_repeat[l1 +plot_count_repeat_1+1, l2] = location_info[0][1]
-                        face_1_repeat_mask[l1 +plot_count_repeat_1+1, l2] = False
-                        if location_info[0][1]%col +1 == 16:
-                            plot_count_repeat_1 += 1
+                        face_1_repeat[l1*2+ 1, l2] = location_info[0][1]
+                        face_1_repeat_mask[l1*2+ 1, l2] = False
 
                 else: # face2
                     if location_info[0][-1] == 1:
@@ -712,8 +694,6 @@ def run():
                     else:
                         face_2_repeat[l1*2 +1, l2] = location_info[0][1]
                         face_2_repeat_mask[l1*2 +1, l2] = False
-                        if location_info[0][1]%col +1 == 16:
-                            plot_count_repeat_2 += 1
 
 
             fig_pack_1, face_ax_1 = plt.subplots (nrows=2, ncols=1, figsize=(5, 5) )
@@ -739,11 +719,6 @@ def run():
             pack_vew1.pyplot(fig_pack_1)#,use_container_width=True)
             pack_vew2.pyplot(fig_pack_2)#,use_container_width=True)
             del fig_pack_1, fig_pack_2
-
-
-
-
-
 
             #########################  TIME SERIE FORECASTING PLACEHOLDER   ###############
             ########## KALMAN FILTERING
@@ -802,7 +777,6 @@ def run():
                 ])
 
             kalman_view.plotly_chart(fig, use_container_width=True)
-            # time.sleep ( 0.1)
 
     # if SADS_submit:
     #     face_1 =  np.ones(shape=(14,16))*0.
