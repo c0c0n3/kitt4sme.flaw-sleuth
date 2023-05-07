@@ -635,10 +635,12 @@ def run():
 
             location_info = to_predict[['face', 'cell', 'point']].values
             row, col  = 14 , 16
+            cell = location_info[0][1] - 1
+            l1, l2 = (cell//col)%row, cell%col
+
             if not time_count:
                 old_location = location_info
-                cell = location_info[0][1] - 1
-                l1, l2 = (cell//col)%row, cell%col
+
                 if location_info[0][0] == 1:  # face1
                     if location_info[0][-1] == 1: # point1
                         face_1[l1*2, l2] = location_info[0][1]
@@ -651,94 +653,68 @@ def run():
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
 
-                            plot_count_1 += 1
-                            time_plot_1_1 = 0
-                            time_plot_1_2 = 0
-
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
 
                         face_2[l1*2 , l2] = location_info[0][1]
                         face_2_maske[l1*2 ,l2] = False
-                        time_plot_2_1 += 1
                     else: # point2
                         face_2[l1*2+ 1, l2] = location_info[0][1]
                         face_2_maske[l1*2+ 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
-                            plot_count_2 += 1
-                            time_plot_2_1 = 0
-                            time_plot_2_2 = 0
-
 
             elif (old_location != location_info[0]).any() and time_count > 0:
 
                 old_location = location_info
-                cell = location_info[0][1] - 1
-                l1, l2 = (cell//col)%row, cell%col
+
                 if location_info[0][0] == 1:  # face1
                     if location_info[0][-1] == 1: # point1
                         face_1[l1*2, l2] = location_info[0][1]
                         face_1_maske[l1*2,l2] = False
-                        time_plot_1_1 += 1
                     else: # point2
                         info_train.write(F"CURRENT:POINT 2 plot_count_1: {plot_count_1 + 1 },  time_plot_1_1 {time_plot_1_2}")
                         face_1[l1*2 + 1, l2] = location_info[0][1]
                         face_1_maske[l1*2 + 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
-                            plot_count_1 += 1
-                            time_plot_1_1 = 0
-                            time_plot_1_2 = 0
 
                 else:   # face2
                     if location_info[0][-1] == 1: # point1
 
                         face_2[l1*2 , l2] = location_info[0][1]
                         face_2_maske[l1*2 ,l2] = False
-                        time_plot_2_1 += 1
                     else: # point2
                         face_2[l1*2+ 1, l2] = location_info[0][1]
                         face_2_maske[l1*2+ 1, l2] = False
                         if cell%(col)  == 15:
                             pack_test.write(f"location_info[0][1]%(col+1) {location_info[0][1]%(col+1)}")
-                            plot_count_2 += 1
-                            time_plot_2_1 = 0
-                            time_plot_2_2 = 0
-            # else:
 
-            #     old_location = location_info
-            #     cell = location_info[0][1]
-            #     l1, l2 = (cell//col)%row, cell%col
-            #     if location_info[0][0] == 1:  # face1
-            #         if location_info[0][-1] == 1: # point1
-            #             face_1_repeat[l1+plot_count_repeat_1, l2] = location_info[0][1]
-            #             face_1_repeat_mask[l1+plot_count_repeat_1, l2] = False
-            #         else: # point2
+            else:
 
-            #             face_1_repeat[l1 +plot_count_repeat_1+1, l2] = location_info[0][1]
-            #             face_1_repeat_mask[l1 +plot_count_repeat_1+1, l2] = False
-            #             if location_info[0][1]%col +1 == 16:
-            #                 plot_count_repeat_1 += 1
+                old_location = location_info
 
-            #     else: # face2
-            #         if location_info[0][-1] == 1:
-            #             face_2_repeat[l1+plot_count_repeat_2, l2] = location_info[0][1]
-            #             face_2_repeat_mask[l1+plot_count_repeat_2, l2] = False
-            #         else:
-            #             face_2_repeat[l1+plot_count_repeat_2 +1, l2] = location_info[0][1]
-            #             face_2_repeat_mask[l1+plot_count_repeat_2 +1, l2] = False
-            #             if location_info[0][1]%col +1 == 16:
-            #                 plot_count_repeat_2 += 1
+                if location_info[0][0] == 1:  # face1
+                    if location_info[0][-1] == 1: # point1
+                        face_1_repeat[l1*2, l2] = location_info[0][1]
+                        face_1_repeat_mask[l1*2, l2] = False
+                    else: # point2
 
+                        face_1_repeat[l1 +plot_count_repeat_1+1, l2] = location_info[0][1]
+                        face_1_repeat_mask[l1 +plot_count_repeat_1+1, l2] = False
+                        if location_info[0][1]%col +1 == 16:
+                            plot_count_repeat_1 += 1
 
-            # set_trace()
-            if time_count==0:
-                last_point = location_info
+                else: # face2
+                    if location_info[0][-1] == 1:
+                        face_2_repeat[l1*2, l2] = location_info[0][1]
+                        face_2_repeat_mask[l1*2, l2] = False
+                    else:
+                        face_2_repeat[l1*2 +1, l2] = location_info[0][1]
+                        face_2_repeat_mask[l1*2 +1, l2] = False
+                        if location_info[0][1]%col +1 == 16:
+                            plot_count_repeat_2 += 1
 
-
-            face_1_cp_mask = face_1_maske.reshape(14, 16)
-            face_2_cp_mask = face_2_maske.reshape(14, 16)
 
             fig_pack_1, face_ax_1 = plt.subplots (nrows=2, ncols=1, figsize=(5, 5) )
             fig_pack_2, face_ax_2 = plt.subplots ( nrows=2, ncols=1,  figsize=(5, 5) )
@@ -844,7 +820,6 @@ def run():
 
     #     time_plot_1_1 = 0
     #     time_plot_1_2 = 0
-    #     time_plot_2_1 = 0
     #     time_plot_2_2 = 0
     #     plot_count_1 = 0
     #     plot_count_1 = 0
