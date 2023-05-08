@@ -11,7 +11,7 @@ import torch
 
 ANOMALY_MODEL_PATH_FROM_ROOT_REPEAT = 'data/cls_new.joblib'
 ANOMALY_MODEL_PATH_FROM_ROOT_IFOREST = 'data/ifor_cls_new.joblib'
-ANOMALY_MODEL_PATH_FROM_ROOT_XGB = 'data/xgb_fine_tuned.pkl'
+# ANOMALY_MODEL_PATH_FROM_ROOT_XGB = 'data/xgb_fine_tuned.pkl'
 KALMAN_PATH_FROM_ROOT = 'data/kalman_update.pf'
 SCALER_PATH = 'data/scaler_new.joblib'
 
@@ -32,8 +32,8 @@ model_iforest = joblib.load ( ANOMALY_MODEL_PATH_FROM_ROOT_IFOREST )
 scaler = joblib.load ( SCALER_PATH )
 kalman_model = kalman_loader()
 
-with open(ANOMALY_MODEL_PATH_FROM_ROOT_XGB , mode='rb') as f:
-    model_xgb = pickle.load(f)
+# with open(ANOMALY_MODEL_PATH_FROM_ROOT_XGB , mode='rb') as f:
+#     model_xgb = pickle.load(f)
 
 def predict (machine: WeldingMachineEntity, model_type: bool = 0) -> AnomalyDetectionEntity:
     label = predict_anomaly ( machine, model_type=model_type )

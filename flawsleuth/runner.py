@@ -25,6 +25,7 @@ from flawsleuth import utils
 from torch.utils.data import Dataset, DataLoader
 
 
+
 st.set_page_config ( layout="wide" )
 
 def run():
@@ -340,15 +341,14 @@ def run():
                     training_triggered = False
                     info_train.info("Retraining the model")
                     if model_choice == "Isolation Forest":
-                        model = IsolationForest(n_estimators=100, max_samples='auto', contamination=0.1,
-                                                            max_features=1.0, bootstrap=False, n_jobs=-1, random_state=42,
-                                                            verbose=1)
-                    
+                        model = IsolationForest(
+                                        n_estimators=200,max_samples='auto',contamination=float(0.07),random_state=0
+                                    )
                     with st.echo():
                         info_train.info("Fitting model...")
                         model.fit(scaler.transform(df_chart[trainable_features].values))
                         
-                        cls_saver(model, clsPath)
+                        # cls_saver(model, clsPath)
                         
                     # train the kalman mode l
                     kalman_train(df_chart[trainable_features].values, KALMAN)
@@ -356,6 +356,7 @@ def run():
 
                 elif TRAIN_MODEL and train_count > number_traning_data and training_triggered:
                     info_train.info("Model retraining completed.")
+                    info.empty()
                     TRAIN_MODEL = False
                     trainer_counter = count(0)
                     train_count = next ( trainer_counter )
