@@ -15,13 +15,11 @@ from fipy.wait import wait_for_orion, wait_for_quantumleap
 
 from flawsleuth.ngsy import WeldingMachineEntity
 from tests.util.data_process import Preprocessing
-
-import streamlit as st
-import time
+ 
 
 # FILEPATH = 'tests/util/Welding_data_new.csv'
-FILEPATH = 'tests/util/Shiftedt_data.csv'
-# FILEPATH = 'tests/util/final.csv'
+# FILEPATH = 'tests/util/Shiftedt_data.csv'
+FILEPATH = 'tests/util/final.csv'
 
 TENANT = 'wamtechnik'
 ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'

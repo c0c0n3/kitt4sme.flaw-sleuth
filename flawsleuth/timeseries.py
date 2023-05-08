@@ -26,12 +26,11 @@ def quantumleap_client() -> QuantumLeapClient:
 def fetch_entity_series(frame) -> EntitySeries:
     entity_type = WeldingMachineEntity(id='').type
     quantumleap = quantumleap_client()
-    data = quantumleap.entity_series(
+    return quantumleap.entity_series(
         entity_id=ENTITY_ID, entity_type=entity_type,
         entries_from_latest=1
     )
-    frame.write(data)
-    return data
+    
 
 # def fetch_data_frame() -> EntitySeries:
 #     r = fetch_entity_series()
