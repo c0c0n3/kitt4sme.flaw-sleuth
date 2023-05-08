@@ -134,6 +134,7 @@ dmypy.json
 
 #Files
 tests/util/Welding_data_new.csv
-data/cls_new.joblib
+# data/cls_new.joblib
 
 *.csv
+data/

@@ -23,7 +23,7 @@ def quantumleap_client() -> QuantumLeapClient:
     return QuantumLeapClient(base_url, ctx)
 
 
-def fetch_entity_series(frame) -> EntitySeries:
+def fetch_entity_series() -> EntitySeries:
     entity_type = WeldingMachineEntity(id='').type
     quantumleap = quantumleap_client()
     return quantumleap.entity_series(

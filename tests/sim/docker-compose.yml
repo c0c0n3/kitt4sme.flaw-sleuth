@@ -109,11 +109,9 @@ services:
       - simtests
     ports:
       - "8500:8500"
-    volumes:
-      - ../../:/app
-      # # - streamlit-app.py:/app/streamlit-app.py
-      # - ../streamlit-app.py:/app/streamlit-app.py
-
+    # volumes:
+    #   - ../../:/app
+     
 networks:
   simtests:
     driver: bridge

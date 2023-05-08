@@ -40,13 +40,12 @@ def run():
         """
     st.markdown ( hide_menu_style, unsafe_allow_html=True )
 
-    new_title = '<center> <h2> <p style="font-family:fantasy; color:#82270c; font-size: 24px;"> SADS(TEST): Shop-floor Anomaly Detection Service: Online mode </p> </h2></center>'
+    new_title = '<center> <h2> <p style="font-family:fantasy; color:#82270c; font-size: 24px;"> SADS: Shop-floor Anomaly Detection Service: Online mode </p> </h2></center>'
     st.markdown(new_title, unsafe_allow_html=True)
 
     info = st.empty()
     info_train = st.empty()
     pack_info = st.empty()
-    pack_test = st.empty()
     SMALL_SIZE = 5
     MEDIUM_SIZE =5
     BIGGER_SIZE = 5
@@ -67,9 +66,8 @@ def run():
 
     dataPath = 'data/final.csv'
     KALMAN_PATH = 'data/kalman_update.pf'
-    # modelPath = 'dashboard/kalman_update.pf'
-    clsPath = 'data/cls_new.joblib'
-    clsPath_ifor = 'data/ifor_cls_new.joblib'
+    # clsPath = 'data/cls_new.joblib'
+    clsPath = 'data/ifor_cls_new.joblib'
     scalerPath = 'data/scaler_new.joblib'
 
     # @st.cache(suppress_st_warning=True)
@@ -125,6 +123,7 @@ def run():
                         print(f'Iter {i}, loss: {loss:.4f}')
                 loss.backward()
                 optim.step()
+        
         return model
 
     def kalman_forecast( y, forecast_steps:int=448) -> tuple:
@@ -240,7 +239,7 @@ def run():
     # fig  = go.Figure()
     kalman_col = ['OJ_mu', 'Charge_mu', 'Residue_mu', 'ForceL_mu','ForceR_mu','OJ_std', 'Charge_std', 'Residue_std', 'ForceL_std','ForceR_std','Measuremnt']
     df_fif = pd.DataFrame(columns= kalman_col)
-
+    trainable_features = ['joules', 'charge', 'residue', 'force_n', 'force_n_1']
 
     if SADS_submit:
         shape = (14, 16)
@@ -264,11 +263,11 @@ def run():
         
             fig = make_subplots ( rows=4, cols=1 )
             time_count = next ( counter )
-            rr = fetch_entity_series (frame=pack_test)
+            rr = fetch_entity_series ()
             to_predict = pd.DataFrame ( rr.dict() )
             # st.write(to_predict)
             to_predict[['face', 'cell', 'point']] = to_predict[['face', 'cell', 'point']].apply(lambda x: x.str.extract('(\d+)', expand=False).astype(int)) # extract the number from the string
-            rr = to_predict[ ['joules', 'charge', 'residue', 'force_n', 'force_n_1',]].astype(float).values # Process_update  if get_data_from_entity( NGSY entity )
+            rr = to_predict[trainable_features].astype(float).values # Process_update  if get_data_from_entity( NGSY entity )
             answer = model.predict ( scaler.transform(rr) )
             to_predict['anomaly'] = answer
 
@@ -347,16 +346,16 @@ def run():
                     
                     with st.echo():
                         info_train.info("Fitting model...")
-                        model.fit(scaler.transform(df_chart[['Joules', 'Charge', 'Residue', 'Force_N', 'Force_N_1']].values))
+                        model.fit(scaler.transform(df_chart[trainable_features].values))
                         
                         cls_saver(model, clsPath)
                         
                     # train the kalman mode l
-                    kalman_train(df_chart, KALMAN)
+                    kalman_train(df_chart[trainable_features].values, KALMAN)
                     train_count = next ( trainer_counter )
 
-                else:
-                    info_train.info("Model fitting completed.")
+                elif TRAIN_MODEL and train_count > number_traning_data and training_triggered:
+                    info_train.info("Model retraining completed.")
                     TRAIN_MODEL = False
                     trainer_counter = count(0)
                     train_count = next ( trainer_counter )
@@ -487,7 +486,7 @@ def run():
 
             fig_pack_1, face_ax_1 = plt.subplots (nrows=2, ncols=1, figsize=(5, 5) )
             fig_pack_2, face_ax_2 = plt.subplots ( nrows=2, ncols=1,  figsize=(5, 5) )
-            annot = True
+            annot = False
             sns.heatmap(face_1, cmap=ListedColormap(['green', 'red']),  vmin=0, vmax=1,linecolor='lightgray', linewidths=0.8,square=True, ax = face_ax_1[0], cbar=False, mask=face_1_maske,\
                         annot=annot, yticklabels=['cell_1','', 'cell_2', '','cell_3', '', 'cell_4', '','cell_5', '','cell_6', '','cell_7', ''])
             face_ax_1[0].set_title ( "Face 1" )
@@ -507,9 +506,7 @@ def run():
             del fig_pack_1, fig_pack_2
 
             #########################  TIME SERIE FORECASTING PLACEHOLDER   ###############
-            ########## KALMAN FILTERING
-            ########## DEEP LEARNING MODEL ( DNN , CNN, RNN )
-
+          
 
             # del fig_2, fig_1
             mu, sigma  = kalman_forecast( y=rr, forecast_steps=1)
@@ -564,4 +561,3 @@ def run():
 
             kalman_view.plotly_chart(fig, use_container_width=True)
             time.sleep(1)
-            # del fig
