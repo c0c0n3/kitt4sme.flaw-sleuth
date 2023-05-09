@@ -3,6 +3,8 @@ from fipy.ngsi.headers import FiwareContext
 from fipy.ngsi.quantumleap import QuantumLeapClient
 import pandas as pd
 from uri import URI
+import streamlit as st
+import time
 
 from flawsleuth.ngsy import WeldingMachineEntity, RawReading
 
@@ -28,13 +30,14 @@ def fetch_entity_series() -> EntitySeries:
         entity_id=ENTITY_ID, entity_type=entity_type,
         entries_from_latest=1
     )
+    
 
-def fetch_data_frame() -> EntitySeries:
-    r = fetch_entity_series()
-    machine1 = WeldingMachineEntity ( id='' ).set_id_with_type_prefix ( '1' )
-    # rr = RawReading ( r  )
-    # x = rr.to_machine_entity ( entity_id=machine1.id )
-    #
-    # print("RRRRRRRRRR", x)
-    # time_indexed_df = pd.DataFrame(r.dict()).set_index('index')
-    return r
+# def fetch_data_frame() -> EntitySeries:
+#     r = fetch_entity_series()
+#     machine1 = WeldingMachineEntity ( id='' ).set_id_with_type_prefix ( '1' )
+#     # rr = RawReading ( r  )
+#     # x = rr.to_machine_entity ( entity_id=machine1.id )
+#     #
+#     # print("RRRRRRRRRR", x)
+#     # time_indexed_df = pd.DataFrame(r.dict()).set_index('index')
+#     return r

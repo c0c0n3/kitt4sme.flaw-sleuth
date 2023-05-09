@@ -1,4 +1,63 @@
+# version: '3'
+
+# services:
+
+#   mongodb:
+#     image: mongo:4.4
+#     networks:
+#       - simtests
+
+#   orion:
+#     image: fiware/orion-ld:0.8.0
+#     entrypoint: orionld -fg -multiservice -ngsiv1Autocast -dbhost mongodb -logLevel DEBUG
+#     networks:
+#       - simtests
+#     ports:
+#       - "1026:1026"
+#     depends_on:
+#       - mongodb
+
+#   crate:
+#     image: crate:4.5.1
+#     command: crate -Cauth.host_based.enabled=false
+#       -Ccluster.name=democluster -Chttp.cors.enabled=true -Chttp.cors.allow-origin="*"
+#     ports:
+#       - "4200:4200"
+#       - "4300:4300"
+#     networks:
+#      - simtests
+
+#   quantumleap:
+#     image: orchestracities/quantumleap:0.8.2
+#     depends_on:
+#       - crate
+#     networks:
+#       - simtests
+#     ports:
+#       - "8668:8668"
+#     environment:
+#       - CRATE_HOST=crate
+#       - USE_GEOCODING=False
+#       - CACHE_QUERIES=False
+#       - LOGLEVEL=DEBUG
+
+#   flawsleuth:
+#     build: ../../
+#     image: kitt4sme/flaw-sleuth
+#     networks:
+#       - simtests
+#     ports:
+#       - "8501:8501"
+
+# networks:
+#   simtests:
+#     driver: bridge
+
 version: '3'
+# services:
+#   orion:
+#     image: orion
+#     platform: linux/amd64
 
 services:
 
@@ -9,6 +68,7 @@ services:
 
   orion:
     image: fiware/orion-ld:0.8.0
+    platform: linux/amd64
     entrypoint: orionld -fg -multiservice -ngsiv1Autocast -dbhost mongodb -logLevel DEBUG
     networks:
       - simtests
@@ -29,6 +89,7 @@ services:
 
   quantumleap:
     image: orchestracities/quantumleap:0.8.2
+    platform: linux/amd64
     depends_on:
       - crate
     networks:
@@ -47,8 +108,10 @@ services:
     networks:
       - simtests
     ports:
-      - "8501:8501"
-
+      - "8500:8500"
+    # volumes:
+    #   - ../../:/app
+     
 networks:
   simtests:
     driver: bridge

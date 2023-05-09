@@ -15,7 +15,11 @@ from fipy.wait import wait_for_orion, wait_for_quantumleap
 
 from flawsleuth.ngsy import WeldingMachineEntity
 from tests.util.data_process import Preprocessing
-FILEPATH = 'tests/util/Welding_data_new.csv'
+ 
+
+# FILEPATH = 'tests/util/Welding_data_new.csv'
+# FILEPATH = 'tests/util/Shiftedt_data.csv'
+FILEPATH = 'tests/util/final.csv'
 
 TENANT = 'wamtechnik'
 ORION_EXTERNAL_BASE_URL = 'http://localhost:1026'
@@ -120,8 +124,8 @@ class WeldingMachineSampler(DevicePoolSampler):
 
     def new_device_entity_scv(self) -> WeldingMachineEntity:
         seed = random.uniform(0, 1)
-        time_count = next(self.counter)
-        to_predict = self.data[time_count:time_count + 1]
+        # time_count = next(self.counter)
+        # to_predict = self.data[time_count:time_count + 1]
 
 
         return WeldingMachineEntity(
@@ -145,8 +149,10 @@ class WeldingMachineSampler(DevicePoolSampler):
     def new_device_entity(self) -> WeldingMachineEntity:
         seed = random.uniform(0, 1)
         self.counter = next(COUNTER)
-        to_predict = self.data[self.counter:self.counter+1]
+        to_predict = self.data.iloc[self.counter:self.counter+1]
         to_predict = to_predict.to_dict()
+
+
         to_print = WeldingMachineEntity(
             id='34',
 
@@ -169,6 +175,7 @@ class WeldingMachineSampler(DevicePoolSampler):
         #     else :
         #         print ( f'key {key}--values type {  val[self.counter] } counter {self.counter}' )
 
+
         return WeldingMachineEntity(
             id='',
 
@@ -184,6 +191,21 @@ class WeldingMachineSampler(DevicePoolSampler):
             force_n_1=FloatAttr.new(to_predict['Force L N_1'][self.counter]),
             datetime=TextAttr.new(f"{datetime.now().isoformat()}")
         )
+        # return WeldingMachineEntity(
+        #     id='',
+
+        #     barcode=TextAttr.new(to_predict['BarCode'][self.counter]),
+        #     face=TextAttr.new(to_predict['Face'][self.counter]),
+        #     cell=TextAttr.new(to_predict['Cell'][self.counter]),
+        #     point=TextAttr.new(to_predict['Point'][self.counter]),
+        #     group=TextAttr.new(to_predict['Group'][self.counter]),
+        #     joules=FloatAttr.new(to_predict['Output Joules'][self.counter]),
+        #     charge=FloatAttr.new(to_predict[ 'Charge (v)'][self.counter]),
+        #     residue=FloatAttr.new(to_predict[ 'Residue (v)'][self.counter]),
+        #     force_n=FloatAttr.new(to_predict[ 'Force L N'][self.counter]),
+        #     force_n_1=FloatAttr.new(to_predict['Force L N_1'][self.counter]),
+        #     datetime=TextAttr.new(f"{datetime.now().isoformat()}")
+        # )
         # return WeldingMachineEntity(
         #     id='34',
         #

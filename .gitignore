@@ -130,3 +130,10 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+
+#Files
+tests/util/Welding_data_new.csv
+# data/cls_new.joblib
+
+*.csv
+data/

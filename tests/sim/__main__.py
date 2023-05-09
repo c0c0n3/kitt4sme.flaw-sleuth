@@ -1,4 +1,4 @@
-from tests.sim.runner import run
+from runner import run
 
 
 if __name__ == '__main__':
