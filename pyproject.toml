@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flawsleuth"
-version = "0.1.0"
+version = "0.3.0"
 description = "Leaves no stone unturned to find welding flaws!"
 authors = ["souayb", "simhavas-uday", "c0c0n3"]
 
