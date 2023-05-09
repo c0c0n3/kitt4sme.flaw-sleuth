@@ -61,7 +61,7 @@ Build and run the Docker image
 
 ```console
 $ docker build -t kitt4sme/flaw-sleuth .
-$ docker run -p 8501:8501 kitt4sme/flaw-sleuth
+$ docker run -p 8500:8500 kitt4sme/flaw-sleuth
 ```
 
 
@@ -87,7 +87,7 @@ Docker engine running already), subscribe Quantum Leap to Orion and then
 will start sending welding machine entities to Orion. To see what's going
 on, browse to the CrateDB Web UI at: http://localhost:4200.
 
-Now browse to our Flaw Sleuth service page at: http://localhost:8501.
+Now browse to our Flaw Sleuth service page at: http://localhost:8500.
 You should see a table containing the latest 10 entries in the welding
 machine series Quantum Leap is busy collecting. Refresh the page to see
 Flaw Sleuth refresh the table as Quantum Leap gets more data from Orion.
