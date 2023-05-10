@@ -1,9 +1,6 @@
 from flawsleuth.ai import predict, kalman_forecast
 from flawsleuth.timeseries import fetch_entity_series
-from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.svm import OneClassSVM
 import streamlit as st
 import numpy as np
 import time
@@ -359,7 +356,7 @@ def run():
                         kalman_train(df_chart[trainable_features].values, KALMAN)
                     except:
                         info_train.warning("Kalman filter training failed.")
-                        
+
                     train_count = next ( trainer_counter )
 
                 elif TRAIN_MODEL and train_count > number_traning_data and training_triggered:
@@ -573,4 +570,4 @@ def run():
                 ])
 
             kalman_view.plotly_chart(fig, use_container_width=True)
-            time.sleep(0.1)
+            time.sleep(0.5)
