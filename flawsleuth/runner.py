@@ -1,9 +1,6 @@
 from flawsleuth.ai import predict, kalman_forecast
 from flawsleuth.timeseries import fetch_entity_series
-from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.svm import OneClassSVM
 import streamlit as st
 import numpy as np
 import time
@@ -26,10 +23,8 @@ from torch.utils.data import Dataset, DataLoader
 
 
 
-st.set_page_config ( layout="wide" )
-
 def run():
-    # st.set_page_config ( layout="wide" )  # setting the display in the
+    st.set_page_config ( layout="wide" )  # setting the display in the
     hide_menu_style = """
         <style>
         #MainMenu {visibility: hidden;}
@@ -71,7 +66,7 @@ def run():
     clsPath = 'data/ifor_cls_new.joblib'
     scalerPath = 'data/scaler_new.joblib'
 
-    # @st.cache(suppress_st_warning=True)
+    @st.cache(suppress_st_warning=True)
     def data_reader(dataPath:str) -> pd.DataFrame :
         data = pd.read_csv(dataPath) #pd.read_csv(dataPath, decimal=',')
         # prepro = Preprocessing()
@@ -113,19 +108,18 @@ def run():
 
     def kalman_train(data, steps:int=10, verbose:bool=True) -> DiscreteKalmanFilter:
         data_set = _get_data(data)
-        model = DiscreteKalmanFilter(dim=5, latent_dim=20)
-        optim = torch.optim.Adam(model.parameters())
+
+        optim = torch.optim.Adam(KALMAN.parameters())
         for _ in range(steps):
             for i, y in  enumerate(data_set):
                 optim.zero_grad()
-                loss = model(torch.Tensor(y))
+                loss = KALMAN(torch.Tensor(y))
                 if verbose:
                     if i % 100 == 0:
                         print(f'Iter {i}, loss: {loss:.4f}')
                 loss.backward()
                 optim.step()
         
-        return model
 
     def kalman_forecast( y, forecast_steps:int=448) -> tuple:
         pred_mu_1, pred_sigma_1, x, P = KALMAN.iterate_disc_sequence(torch.Tensor(y))#iterate_disc_sequence(torch.Tensor(y))
@@ -140,7 +134,7 @@ def run():
 
     # df = pd.read_csv(dataPath)
     # st.write(df.columns)
-    # data = data_reader(dataPath=dataPath)
+    data = data_reader(dataPath=dataPath)
 #######################################################################
 
 
@@ -222,9 +216,13 @@ def run():
 
     table_title = '<center> <h2> <p style="font-family:fantasy; color:#82270c; font-size: 24px;"> Display the table </p> </h2></center>'
     table_view.markdown ( table_title, unsafe_allow_html=True )
-    day_left, time_right = table_view.columns ( 2 )
-    good_weld = day_left.empty ()
-    bad_weld = time_right.empty ()
+    table_left, table_right = table_view.columns ( 2 )
+    good_title = table_left.empty ()
+    good_title.markdown ( '<center> <h2> <p style="font-family:fantasy; font-size: 14px;"> Good weld </p> </h2></center>', unsafe_allow_html=True )
+    good_weld = table_left.empty ()
+    bad_title = table_right.empty ()
+    bad_title.markdown ( '<center> <h2> <p style="font-family:fantasy; font-size: 14px;"> Bad weld </p> </h2></center>', unsafe_allow_html=True )
+    bad_weld = table_right.empty ()
 
 
 
@@ -289,7 +287,7 @@ def run():
 
                 df_chart['anomaly'] = answer
             else:
-                if old_bar != bar:
+                if old_bar != bar and len(result_old) >= WINDOW_SIZE:
                     training_triggered = True
                     face_1, face_2 = np.zeros(shape), np.zeros(shape)
                     face_1_maske, face_2_maske = np.ones(shape), np.ones(shape)
@@ -351,7 +349,12 @@ def run():
                         # cls_saver(model, clsPath)
                         
                     # train the kalman mode l
-                    kalman_train(df_chart[trainable_features].values, KALMAN)
+                    try:
+                        info_train.info("Training the Kalman filter...")
+                        kalman_train(df_chart[trainable_features].values, KALMAN)
+                    except:
+                        info_train.warning("Kalman filter training failed.")
+
                     train_count = next ( trainer_counter )
 
                 elif TRAIN_MODEL and train_count > number_traning_data and training_triggered:
@@ -403,14 +406,18 @@ def run():
 
             #
             if time_count > 2 :
-                distplot , ax = plt.subplots(constrained_layout=True)
-                # sns.distplot(test['Joules'], hist = False, kde = True, kde_kws = {'shade': True, 'linewidth': 3},
-                #   label = "Anomaly")
+                try:
+                    distplot , ax = plt.subplots(constrained_layout=True)
+                    # sns.distplot(test['Joules'], hist = False, kde = True, kde_kws = {'shade': True, 'linewidth': 3},
+                    #   label = "Anomaly")
 
-                sns.kdeplot(data=test, x=feature, hue="anomaly", multiple="stack")
-                show_dist.pyplot(distplot)
+                    sns.kdeplot(data=test, x=feature, hue="anomaly", multiple="stack")
+                    show_dist.pyplot(distplot)
 
-                del distplot
+                    del distplot
+                except:
+                    pass
+
 
             del fig, fig_pi, fig_px,
 
@@ -561,4 +568,4 @@ def run():
                 ])
 
             kalman_view.plotly_chart(fig, use_container_width=True)
-            time.sleep(1)
+            time.sleep(0.5)
