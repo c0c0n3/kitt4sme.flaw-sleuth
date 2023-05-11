@@ -23,10 +23,8 @@ from torch.utils.data import Dataset, DataLoader
 
 
 
-st.set_page_config ( layout="wide" )
-
 def run():
-    # st.set_page_config ( layout="wide" )  # setting the display in the
+    st.set_page_config ( layout="wide" )  # setting the display in the
     hide_menu_style = """
         <style>
         #MainMenu {visibility: hidden;}
@@ -68,7 +66,7 @@ def run():
     clsPath = 'data/ifor_cls_new.joblib'
     scalerPath = 'data/scaler_new.joblib'
 
-    # @st.cache(suppress_st_warning=True)
+    @st.cache(suppress_st_warning=True)
     def data_reader(dataPath:str) -> pd.DataFrame :
         data = pd.read_csv(dataPath) #pd.read_csv(dataPath, decimal=',')
         # prepro = Preprocessing()
@@ -136,7 +134,7 @@ def run():
 
     # df = pd.read_csv(dataPath)
     # st.write(df.columns)
-    # data = data_reader(dataPath=dataPath)
+    data = data_reader(dataPath=dataPath)
 #######################################################################
 
 
