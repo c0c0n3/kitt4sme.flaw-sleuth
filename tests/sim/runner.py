@@ -28,8 +28,9 @@ def send_welding_machine_entities():
 def run():
     services_running = False
     try:
-        bootstrap()
-        services_running = True
+        # bootstrap()
+        # services_running = True
+        services_running = False
 
         print('>>> sending welding machine entities to Orion...')
         while True:
